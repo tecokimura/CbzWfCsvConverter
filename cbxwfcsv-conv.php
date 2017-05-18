@@ -7,6 +7,9 @@
  */
 
 
+require_once './vendor/autoload.php';
+// use Monolog¥Handler¥StreamHandler;
+
 // argv index
 define( 'ARG_INDEX_PHP', 0 );
 define( 'ARG_INDEX_CONFIG', 1 );
@@ -23,6 +26,11 @@ exit;
  */
 function main($argv) {
     try {
+
+        $log = new Monolog\Logger(Monolog\Logger::DEBUG);
+
+        $log->debug("Hello World");
+
 
     } catch( Exception $e) {
         var_dump($e);
