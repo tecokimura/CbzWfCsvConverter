@@ -8,9 +8,9 @@
 
 
 // argv index
-define( 'ARGI_PHP', 0 );
-define( 'ARGI_CONFIG', 1 );
-define( 'ARGI_CSV', 2 );
+define( 'ARG_INDEX_PHP', 0 );
+define( 'ARG_INDEX_CONFIG', 1 );
+define( 'ARG_INDEX_CSV', 2 );
 
 if ( isset($argc) && isset($argv) ) {
     main($argv);
@@ -21,8 +21,7 @@ exit;
  * Program main
  * @param $argv
  */
-function main($argv)
-{
+function main($argv) {
     try {
 
     } catch( Exception $e) {
