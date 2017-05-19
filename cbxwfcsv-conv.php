@@ -34,10 +34,13 @@ function main($argv) {
 
         $config = new Config();
         $config->setFromArgv($argv);
-
         $log->notice($config->getConfigFile());
 
-        readCsvFile();
+        $csv = readCsvFile($config);
+
+        foreach($csv as $line) {
+            echo $line.PHP_EOL;
+        }
 
     } catch( Exception $e) {
         var_dump($e);
@@ -49,40 +52,36 @@ function main($argv) {
 
 function readCsvFile(Config $config) {
 
+    $csvAry = array();
+
     try {
 
-        while(TRUE) {
+        $fp = fopen($config->getInputCsvFile(), 'r');
 
-            /*
-             * 一行づつ読み込む
-             * 正規表現で行等が"[0-9]+", である
-             *  yes : 配列に追加
-             *  no : 一つうえの配列に追加
-             *
-             * "," なっていない,は;に置換する
-             */
+        $line = "";
+        $tmpAry = array();
+        while( $tmpLine = fgets($fp) ) {
 
-            break;
+            $line .= trim($tmpLine);
+
+            if( preg_match('/[^,]"$/', trim($line), $m) ) {
+                $tmpAry []= $line;
+                $line = "";
+            }
         }
 
-        /*
-         * 必要な grep をかける
-         * key1 | key2
-         */
+        // separatorじゃないカンマを消す
+        foreach($tmpAry as $line) {
+            $csvAry []= preg_replace('/([^"]),/', '$1', $line);
+        }
 
-
-        /*
-         *  foreach()
-         *  , で分割して該当indexを取得
-         */
-
-
+        fclose($fp);
 
     } catch(Exception $e){
         throw $e;
     }
 
-
+    return $csvAry;
 }
 
 function encShiftJISToUtf8($str) {
@@ -106,8 +105,6 @@ class Config
      * @return bool
      */
     function setFromArgv($argv) {
-        $ret = FALSE;
-
         $this->phpFile      = isset($argv[0]) ? $argv[0] : "";
         $this->configFile   = isset($argv[1]) ? $argv[1] : "";
         $this->inputCsvFile = isset($argv[2]) ? $argv[2] : "";
@@ -162,13 +159,19 @@ class Config
 
 class CsvRecord
 {
-    private $wfNo;
-    private $reqName;
-    private $reqDatetime;
-    private $title;
-    private $price;
+    // print $1","$2","$3","$4","$5","$154","$156","$170}
+    private $wfNo;      // 1
+    private $reqName;   // 2
+    private $reqDatetime;   // 3
+    private $title;         // 4
+    private $price;         // 5
     private $accrualDate;   // 発生日
     private $formName;  // フォーム名
     private $purpose;   // 目的
+
+
+    function setFromLine($str) {
+        $columns = explode(',', $str);
+    }
 
 }
