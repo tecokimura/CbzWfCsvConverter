@@ -39,7 +39,8 @@ function main($argv) {
         $csv = readCsvFile($config);
 
         foreach($csv as $line) {
-            echo $line.PHP_EOL;
+            $record = new CsvRecord();
+            $record->setFromLine($line);
         }
 
     } catch( Exception $e) {
@@ -159,19 +160,41 @@ class Config
 
 class CsvRecord
 {
+    const IDX_NO            = 0;
+    const IDX_REQ_NAME      = 1;
+    const IDX_REQ_DATETIME  = 2;
+    const IDX_FORM_NAME     = 3;
+    const IDX_TITLE         = 4;
+    const IDX_ACCRUAL_DATE  = 153;
+    const IDX_PURPOSE       = 165;
+    const IDX_PRICE         = 169;
+
     // print $1","$2","$3","$4","$5","$154","$156","$170}
-    private $wfNo;      // 1
-    private $reqName;   // 2
-    private $reqDatetime;   // 3
-    private $title;         // 4
-    private $price;         // 5
-    private $accrualDate;   // 発生日
-    private $formName;  // フォーム名
-    private $purpose;   // 目的
+    private $csvAry = array();
 
 
     function setFromLine($str) {
-        $columns = explode(',', $str);
+        $this->csvAry = explode(',', $str);
+        echo " ".$this->getWorkFlowNo()
+            .','.$this->getRequestName()
+            .','.$this->getRequestDatetime()
+            .','.$this->getPrice()
+            .','.$this->getAccrualDate()
+            .','.$this->getTitle()
+            .','.$this->getFormName()
+            .','.$this->getPurpose()
+            .PHP_EOL;
     }
 
+    // getter
+    function getWorkFlowNo() { return $this->getByIndex(self::IDX_NO); }
+    function getRequestName() { return $this->getByIndex(self::IDX_REQ_NAME); }
+    function getRequestDatetime() { return $this->getByIndex(self::IDX_REQ_DATETIME); }
+    function getFormName() { return $this->getByIndex(self::IDX_FORM_NAME); }
+    function getTitle() { return $this->getByIndex(self::IDX_TITLE); }
+    function getAccrualDate() { return $this->getByIndex(self::IDX_ACCRUAL_DATE); }
+    function getPurpose() { return $this->getByIndex(self::IDX_PURPOSE); }
+    function getPrice() { return $this->getByIndex(self::IDX_PRICE); }
+    function getByIndex($i) { return isset($this->csvAry[$i]) ? $this->csvAry[$i] : "";}
 }
+
